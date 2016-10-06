@@ -1,8 +1,6 @@
 # Supported tags and respective `Dockerfile` links
 -	[`1.0`, `1.0.2`, `latest` (*tevjef/influxdb/1.0/Dockerfile*)](https://raw.githubusercontent.com/tevjef/influxdb-docker/master/1.0/Dockerfile)
 
-This image is a fork of https://github.com/tutumcloud/influxdb with support for InfluxDB 1.0+
-
 # InfluxDB
 
 InfluxDB is a time series database built from the ground up to handle high write and query loads. InfluxDB is meant to be used as a backing store for any use case involving large amounts of timestamped data, including DevOps monitoring, application metrics, IoT sensor data, and real-time analytics.
