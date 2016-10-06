@@ -2,64 +2,57 @@
 
 set -m
 CONFIG_FILE="/etc/influxdb/influxdb.conf"
-INFLUX_HOST="localhost"
-INFLUX_API_PORT="8086"
-API_URL="http://${INFLUX_HOST}:${INFLUX_API_PORT}"
+PASS=${INFLUXDB_ADMIN_PASSWORD:-admin}
+ADMIN_CREATED="/var/lib/influxdb/.admin_created"
+DB_CREATED="/var/lib/influxdb/.db_created"
 
-if [ "${PRE_CREATE_DB}" == "**None**" ]; then
-    unset PRE_CREATE_DB
-fi
-
-echo "influxdb configuration: "
+echo "InfluxDB configuration: "
 cat ${CONFIG_FILE}
 echo "=> Starting InfluxDB ..."
-if [ -n "${JOIN}" ]; then
-  exec influxd -config=${CONFIG_FILE} -join ${JOIN} &
-else
-  exec influxd -config=${CONFIG_FILE} &
+exec influxd -config=${CONFIG_FILE} &
+
+#wait for the startup of influxdb
+RET=1
+while [[ RET -ne 0 ]]; do
+    echo "=> Waiting for confirmation of InfluxDB service startup ..."
+    sleep 3
+    curl -k http://localhost:8086/ping 2> /dev/null
+    RET=$?
+done
+echo ""
+
+if [ ! -f "${ADMIN_CREATED}" ] && [ -n "${INFLUXDB_ADMIN_USER}" ]; then
+    echo "=> Creating admin user"
+    influx -execute="CREATE USER ${INFLUXDB_ADMIN_USER} WITH PASSWORD '${PASS}' WITH ALL PRIVILEGES"
+    touch "${ADMIN_CREATED}"
 fi
 
-# Pre create database on the initiation of the container
-if [ -n "${PRE_CREATE_DB}" ]; then
-    echo "=> About to create the following database: ${PRE_CREATE_DB}"
-    if [ -f "/.pre_db_created" ]; then
-        echo "=> Database had been created before, skipping ..."
-    else
-        arr=$(echo ${PRE_CREATE_DB} | tr ";" "\n")
+if [ ! -f "${DB_CREATED}" ]; then
+    if [ -n "${INFLUXDB_CREATE_DB}" ]; then
+        echo "=> About to create the following database: ${INFLUXDB_CREATE_DB}"
+        arr=$(echo ${INFLUXDB_CREATE_DB} | tr ";" "\n")
 
-        #wait for the startup of influxdb
-        RET=1
-        while [[ RET -ne 0 ]]; do
-            echo "=> Waiting for confirmation of InfluxDB service startup ..."
-            sleep 3
-            curl -k ${API_URL}/ping 2> /dev/null
-            RET=$?
-        done
-        echo ""
 
-        PASS=${ADMIN_PASSWORD:-admin}
-        if [ -n "${ADMIN_USER}" ]; then
-          echo "=> Creating admin user"
-          influx -host=${INFLUX_HOST} -port=${INFLUX_API_PORT} -execute="CREATE USER ${ADMIN_USER} WITH PASSWORD '${PASS}' WITH ALL PRIVILEGES"
-          for x in $arr
-          do
-              echo "=> Creating database: ${x}"
-              influx -host=${INFLUX_HOST} -port=${INFLUX_API_PORT} -username=${ADMIN_USER} -password="${PASS}" -execute="create database ${x}"
-              influx -host=${INFLUX_HOST} -port=${INFLUX_API_PORT} -username=${ADMIN_USER} -password="${PASS}" -execute="grant all PRIVILEGES on ${x} to ${ADMIN_USER}"
-          done
-          echo ""
+
+        if [ -n "${INFLUXDB_ADMIN_USER}" ]; then
+            for x in $arr; do
+                echo "=> Creating database: ${x}"
+                influx -username=${INFLUXDB_ADMIN_USER} -password="${PASS}" -execute="CREATE DATABASE ${x}"
+                influx -username=${INFLUXDB_ADMIN_USER} -password="${PASS}" -execute="GRANT ALL PRIVILEGES ON ${x} TO ${INFLUXDB_ADMIN_USER}"
+            done
+            echo ""
         else
-          for x in $arr
-          do
-              echo "=> Creating database: ${x}"
-              influx -host=${INFLUX_HOST} -port=${INFLUX_API_PORT} -execute="create database \"${x}\""
-          done
+            for x in $arr; do
+                echo "=> Creating database: ${x}"
+                influx -execute="CREATE DATABASE \"${x}\""
+            done
+            echo ""
         fi
 
-        touch "/.pre_db_created"
+        touch "${DB_CREATED}"
+    else
+        echo "=> No database need to be pre-created"
     fi
-else
-    echo "=> No database need to be pre-created"
 fi
 
 fg

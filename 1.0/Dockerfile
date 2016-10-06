@@ -14,8 +14,6 @@ RUN wget -q https://dl.influxdata.com/influxdb/releases/influxdb_${INFLUXDB_VERS
 
 COPY influxdb.conf /etc/influxdb/influxdb.conf
 
-ENV PRE_CREATE_DB **None**
-
 EXPOSE 8086
 
 VOLUME /var/lib/influxdb
