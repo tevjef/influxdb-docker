@@ -165,7 +165,7 @@ To minimize image size, it's uncommon for additional related tools (such as `git
 
 # License
 
-View [license information](https://github.com/influxdata/influxdb/blob/master/LICENSE) for the software contained in this image.
+View [license information](https://github.com/tevjef/influxdb-docker/blob/master/LICENSE) for the software contained in this image.
 
 # Supported Docker versions
 
