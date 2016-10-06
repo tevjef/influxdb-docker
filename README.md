@@ -1,6 +1,5 @@
 # Supported tags and respective `Dockerfile` links
--	[`1.0`, `1.0.2`, `latest` (*tevjef/influxdb/1.0/Dockerfile*)](https://github.com/influxdata/influxdata-docker/blob/21becafddfa32acce5bdcfd44d29709dd89f3d23/influxdb/1.0/Dockerfile)
--	[`1.0-alpine`, `1.0.2-alpine`, `alpine` (*tevjef/influxdb/1.0/alpine/Dockerfile*)](https://github.com/influxdata/influxdata-docker/blob/21becafddfa32acce5bdcfd44d29709dd89f3d23/influxdb/1.0/alpine/Dockerfile)
+-	[`1.0`, `1.0.2`, `latest` (*tevjef/influxdb/1.0/Dockerfile*)](https://raw.githubusercontent.com/tevjef/influxdb-docker/master/1.0/Dockerfile)
 
 This image is a fork of https://github.com/tutumcloud/influxdb with support for InfluxDB 1.0+
 
@@ -65,7 +64,7 @@ $ docker run -p 8083:8083 -p 8086:8086 \
 
 Modify `$PWD` to the directory where you want to store the configuration file.
 
-## Environment Variables
+#### Environment Variables
 
 For environment variables, the format is `INFLUXDB_$SECTION_$NAME`. All dashes (`-`) are replaced with underscores (`_`). If the variable isn't in a section, then omit that part.
 
@@ -79,19 +78,21 @@ INFLUXDB_DATA_QUERY_LOG_ENABLED=false
 
 The `tevjef/influxdb` image uses several environment variables which are easy to miss. While none of the variables are required, they may significantly aid you in using the image.
 
-### `PRE_CREATE_DB`
+###### `PRE_CREATE_DB`
 
 This optional environment variable can be used to define databases to be automatically created on the first time the container starts. Each database name is separated by `;`. For example:
 
-### `ADMIN_USER`
+###### `ADMIN_USER`
 
 This optional environment variable is used to create a user with all privileges.
 
-### `ADMIN_PASSWORD`
+###### `ADMIN_PASSWORD`
 
 This optional environment variable is used in conjunction with `ADMIN_USER` to set a user and its password. If it is not specified, then the default password `admin` will be used.
 
-```docker run -d -p 8083:8083 -p 8086:8086 -e ADMIN_USER="root" -e ADMIN_PASSWORD="somepassword" -e PRE_CREATE_DB="db1;db2;db3" tevjef/influxdb:latest```
+```
+    docker run -d -p 8083:8083 -p 8086:8086 -e ADMIN_USER="root" -e ADMIN_PASSWORD="somepassword" -e PRE_CREATE_DB="db1;db2;db3" tevjef/influxdb:latest
+```
 
 Find more about configuring InfluxDB [here](https://docs.influxdata.com/influxdb/latest/introduction/installation/)
 
@@ -153,17 +154,9 @@ The `tevjef/influxdb` images come in many flavors, each designed for a specific 
 
 This is the defacto image. If you are unsure about what your needs are, you probably want to use this one. It is designed to be used both as a throw away container (mount your source code and start the container to start your app), as well as the base to build other images off of. This tag is based off of [`buildpack-deps`](https://registry.hub.docker.com/_/buildpack-deps/). `buildpack-deps` is designed for the average user of docker who has many images on their system. It, by design, has a large number of extremely common Debian packages. This reduces the number of packages that images that derive from it need to install, thus reducing the overall size of all images on your system.
 
-## `tevjef/influxdb:alpine`
-
-This image is based on the popular [Alpine Linux project](http://alpinelinux.org), available in [the `alpine` official image](https://hub.docker.com/_/alpine). Alpine Linux is much smaller than most distribution base images (~5MB), and thus leads to much slimmer images in general.
-
-This variant is highly recommended when final image size being as small as possible is desired. The main caveat to note is that it does use [musl libc](http://www.musl-libc.org) instead of [glibc and friends](http://www.etalabs.net/compare_libcs.html), so certain software might run into issues depending on the depth of their libc requirements. However, most software doesn't have an issue with this, so this variant is usually a very safe choice. See [this Hacker News comment thread](https://news.ycombinator.com/item?id=10782897) for more discussion of the issues that might arise and some pro/con comparisons of using Alpine-based images.
-
-To minimize image size, it's uncommon for additional related tools (such as `git` or `bash`) to be included in Alpine-based images. Using this image as a base, add the things you need in your own Dockerfile (see the [`alpine` image description](https://hub.docker.com/_/alpine/) for examples of how to install packages if you are unfamiliar).
-
 # License
 
-View [license information](https://github.com/influxdata/influxdb/blob/master/LICENSE) for the software contained in this image.
+View [license information](https://github.com/tevjef/influxdb-docker/blob/master/LICENSE) for the software contained in this image.
 
 # Supported Docker versions
 
