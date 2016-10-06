@@ -78,20 +78,20 @@ INFLUXDB_DATA_QUERY_LOG_ENABLED=false
 
 The `tevjef/influxdb` image uses several environment variables which are easy to miss. While none of the variables are required, they may significantly aid you in using the image.
 
-###### `PRE_CREATE_DB`
+###### `INFLUXDB_CREATE_DB`
 
 This optional environment variable can be used to define databases to be automatically created on the first time the container starts. Each database name is separated by `;`. For example:
 
-###### `ADMIN_USER`
+###### `INFLUXDB_ADMIN_USER`
 
 This optional environment variable is used to create a user with all privileges.
 
-###### `ADMIN_PASSWORD`
+###### `INFLUXDB_ADMIN_PASSWORD`
 
-This optional environment variable is used in conjunction with `ADMIN_USER` to set a user and its password. If it is not specified, then the default password `admin` will be used.
+This optional environment variable is used in conjunction with `INFLUXDB_ADMIN_USER` to set a user and its password. If it is not specified, then the default password `admin` will be used.
 
 ```
-    docker run -d -p 8083:8083 -p 8086:8086 -e ADMIN_USER="root" -e ADMIN_PASSWORD="somepassword" -e PRE_CREATE_DB="db1;db2;db3" tevjef/influxdb:latest
+    docker run -d -p 8083:8083 -p 8086:8086 -e INFLUXDB_ADMIN_USER="root" -e INFLUXDB_ADMIN_PASSWORD="somepassword" -e INFLUXDB_CREATE_DB="db1;db2;db3" tevjef/influxdb:latest
 ```
 
 Find more about configuring InfluxDB [here](https://docs.influxdata.com/influxdb/latest/introduction/installation/)
