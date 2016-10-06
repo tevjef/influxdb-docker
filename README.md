@@ -1,6 +1,6 @@
 # Supported tags and respective `Dockerfile` links
--	[`1.0`, `1.0.2`, `latest` (*tevjef/influxdb/1.0/Dockerfile*)](https://github.com/influxdata/influxdata-docker/blob/21becafddfa32acce5bdcfd44d29709dd89f3d23/influxdb/1.0/Dockerfile)
--	[`1.0-alpine`, `1.0.2-alpine`, `alpine` (*tevjef/influxdb/1.0/alpine/Dockerfile*)](https://github.com/influxdata/influxdata-docker/blob/21becafddfa32acce5bdcfd44d29709dd89f3d23/influxdb/1.0/alpine/Dockerfile)
+-	[`1.0`, `1.0.2`, `latest` (*tevjef/influxdb/1.0/Dockerfile*)](https://raw.githubusercontent.com/tevjef/influxdb-docker/master/1.0/Dockerfile)
+-	[`1.0-alpine`, `1.0.2-alpine`, `alpine` (*tevjef/influxdb/1.0/alpine/Dockerfile*)](https://raw.githubusercontent.com/tevjef/influxdb-docker/master/1.0/alpine/Dockerfile)
 
 This image is a fork of https://github.com/tutumcloud/influxdb with support for InfluxDB 1.0+
 
