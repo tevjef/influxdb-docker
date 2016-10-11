@@ -78,8 +78,7 @@ The `tevjef/influxdb` image uses several environment variables which are easy to
 
 ###### `INFLUXDB_CREATE_DB`
 
-This optional environment variable can be used to define databases to be automatically created on the first time the container starts. Each database name is separated by `;`. For example:
-
+This optional environment variable can be used to define databases to be automatically created on the first time the container starts. Each database name is separated by `;`.
 ###### `INFLUXDB_ADMIN_USER`
 
 This optional environment variable is used to create a user with all privileges.
