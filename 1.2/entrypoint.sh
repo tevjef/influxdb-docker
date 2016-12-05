@@ -19,7 +19,7 @@ while [[ RET -ne 0 ]]; do
     curl -k http://localhost:8086/ping 2> /dev/null
     RET=$?
 done
-echo ""
+echo "=> InfluxDB has started"
 
 if [ ! -f "${ADMIN_CREATED}" ] && [ -n "${INFLUXDB_ADMIN_USER}" ]; then
     echo "=> Creating admin user"
@@ -30,19 +30,39 @@ fi
 if [ ! -f "${DB_CREATED}" ]; then
     if [ -n "${INFLUXDB_CREATE_DB}" ]; then
         echo "=> About to create the following database: ${INFLUXDB_CREATE_DB}"
-        arr=$(echo ${INFLUXDB_CREATE_DB} | tr ";" "\n")
+        IFS=';' read -r -a databases <<< "${INFLUXDB_CREATE_DB}"
+        IFS=';' read -r -a policies <<< "${INFLUXDB_CREATE_RP}"
 
         if [ -n "${INFLUXDB_ADMIN_USER}" ]; then
-            for x in $arr; do
-                echo "=> Creating database: ${x}"
-                influx -username=${INFLUXDB_ADMIN_USER} -password="${PASS}" -execute="CREATE DATABASE ${x}"
-                influx -username=${INFLUXDB_ADMIN_USER} -password="${PASS}" -execute="GRANT ALL PRIVILEGES ON ${x} TO ${INFLUXDB_ADMIN_USER}"
+            for i in "${!databases[@]}"; do
+                db="${databases[i]}"
+                echo "=> Creating database ${db}"
+                influx -username=${INFLUXDB_ADMIN_USER} -password="${PASS}" -execute="CREATE DATABASE \"${db}\""
+                influx -username=${INFLUXDB_ADMIN_USER} -password="${PASS}" -execute="GRANT ALL PRIVILEGES ON \"${db}\" TO ${INFLUXDB_ADMIN_USER}"
+
+                if [ -n "${policies[i]}" ] && [ "${policies[i]}" != "none" ] ; then
+                    IFS=':' read -r -a policy <<< "${policies[i]}"
+                    echo "=> Creating default retention policy ${policy[0]} for database ${db} with duration ${policy[1]}"
+                    influx -username=${INFLUXDB_ADMIN_USER} -password="${PASS}" -execute="CREATE RETENTION POLICY \"${policy[0]}\" ON \"${db}\" DURATION ${policy[1]} REPLICATION 1 DEFAULT"
+                else 
+                    echo "=> No retention policy for database ${db}"
+                fi
             done
             echo ""
         else
-            for x in $arr; do
-                echo "=> Creating database: ${x}"
-                influx -execute="CREATE DATABASE \"${x}\""
+            for i in ${!databases[@]}; do
+                db="${databases[i]}"
+                echo "=> Creating database ${db}"
+
+                influx -execute="CREATE DATABASE \"${db}\""
+
+                if [ -n "${policies[i]}" ] && [ "${policies[i]}" != "none" ] ; then
+                    IFS=':' read -r -a policy <<< "${policies[i]}"
+                    echo "=> Creating default retention policy ${policy[0]} for database ${db} with duration ${policy[1]}"
+                    influx -execute="CREATE RETENTION POLICY \"${policy[0]}\" ON \"${db}\" DURATION ${policy[1]} REPLICATION 1 DEFAULT"
+                else 
+                    echo "=> No retention policy for database (${db})"
+                fi
             done
             echo ""
         fi
