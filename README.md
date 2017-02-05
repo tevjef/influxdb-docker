@@ -82,6 +82,19 @@ The `tevjef/influxdb` image uses several environment variables which are easy to
 ###### `INFLUXDB_CREATE_DB`
 
 This optional environment variable can be used to define databases to be automatically created on the first time the container starts. Each database name is separated by `;`.
+
+###### `INFLUXDB_CREATE_RP`
+
+This optional environment variable is used in conjunction with `INFLUXDB_CREATE_DB` to create a default retention policy for a database. Each retention policy has the syntax
+`<name>:<duration>`. Multiple retention policies are delimited by `;` with each policy mapping to one database. 
+
+```
+      -e INFLUXDB_CREATE_DB=db1;db2;db3 \
+      -e INFLUXDB_CREATE_RP=db1_rp:2w;none;db3_rp:1d2h
+```
+
+It follows that databases `db1` and `db3` have retention policies `db1_rp:2w` and `db3_rp:1d2h` while `db2` has no retention policy.
+
 ###### `INFLUXDB_ADMIN_USER`
 
 This optional environment variable is used to create a user with all privileges.
